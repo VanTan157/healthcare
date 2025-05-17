@@ -1,0 +1,18 @@
+_format_version: "2.1"
+services:
+  - name: user_service
+    url: http://user_service:8000/
+    routes:
+      - name: user_route
+        paths:
+          - /api/users
+          - /api/users/register/
+          - /api/token
+          - /api/token/refresh
+        strip_path: false
+  - name: patient_service
+    url: http://patient_service:8000/api/
+    routes:
+      - name: patient_route
+        paths:
+          - /api/patients

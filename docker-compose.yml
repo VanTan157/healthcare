@@ -1,0 +1,141 @@
+services:
+  user_service:
+    build: ./be/user_service
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/user_db
+    depends_on:
+      - postgres
+
+  patient_service:
+    build: ./be/patient_service
+    ports:
+      - "8002:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/patient_db
+    depends_on:
+      - postgres
+
+  doctor_service:
+    build: ./be/doctor_service
+    ports:
+      - "8003:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/doctor_db
+    depends_on:
+      - postgres
+
+  pharmacy_service:
+    build: ./be/pharmacy_service
+    ports:
+      - "8004:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/pharmacy_db
+    depends_on:
+      - postgres
+
+  laboratory_service:
+    build: ./be/laboratory_service
+    ports:
+      - "8005:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/laboratory_db
+    depends_on:
+      - postgres
+
+  insurance_service:
+    build: ./be/insurance_service
+    ports:
+      - "8006:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/insurance_db
+    depends_on:
+      - postgres
+
+  notification_service:
+    build: ./be/notification_service
+    ports:
+      - "8007:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/notification_db
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+
+  payment_service:
+    build: ./be/payment_service
+    ports:
+      - "8008:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/payment_db
+    depends_on:
+      - postgres
+
+  chatbot_service:
+    build: ./be/chatbot_service
+    ports:
+      - "8009:8000"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/chatbot_db
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=user_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  api_gateway:
+    build: ./be/api_gateway
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://api_gateway:8080/api
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - api_gateway
+    volumes:
+      - ./fe:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:

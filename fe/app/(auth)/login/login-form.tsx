@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
@@ -7,6 +9,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,8 +26,12 @@ export default function LoginForm() {
       if (!res.ok) {
         throw new Error("Tên đăng nhập hoặc mật khẩu không đúng.");
       }
-      // const data = await res.json(); // handle token here if needed
+      const data = await res.json();
+      // Lưu access và refresh token vào cookies
+      Cookies.set("access", data.access, { expires: 7 });
+      Cookies.set("refresh", data.refresh, { expires: 7 });
       alert("Đăng nhập thành công!");
+      router.push("/");
     } catch (err: any) {
       setError(err.message || "Có lỗi xảy ra.");
     } finally {

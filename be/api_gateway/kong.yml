@@ -15,4 +15,6 @@ services:
     routes:
       - name: patient_route
         paths:
-          - /api/patients
+          - /api/patients/
+          - /api/appointments/
+        strip_path: false

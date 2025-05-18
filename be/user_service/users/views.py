@@ -2,9 +2,11 @@ from rest_framework.views import APIView
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from .models import User
-from .serializers import UserSerializer, RegisterSerializer
+from .serializers import UserSerializer, RegisterSerializer, CustomTokenObtainPairSerializer
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -13,18 +15,15 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create':
             return [permissions.AllowAny()]
-        elif self.action == 'list':  # Kiểm tra cho action list
-            return [permissions.IsAuthenticated(), RolePermission()]  # Sử dụng custom permission
-        return [permissions.IsAuthenticated()]  # Các action khác yêu cầu xác thực
+        elif self.action == 'list':
+            return [permissions.IsAuthenticated(), RolePermission()]
+        return [permissions.IsAuthenticated()]
 
-# Custom permission để kiểm tra role
 class RolePermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        # Lấy user hiện tại
         user = request.user
         if not user.is_authenticated:
             return False
-        # Chỉ cho phép admin và doctor
         allowed_roles = ['admin', 'doctor']
         return user.role in allowed_roles
 
@@ -38,3 +37,13 @@ def register_view(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

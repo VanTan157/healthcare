@@ -31,7 +31,7 @@ export default function LoginForm() {
       Cookies.set("access", data.access, { expires: 7 });
       Cookies.set("refresh", data.refresh, { expires: 7 });
       alert("Đăng nhập thành công!");
-      router.push("/");
+      window.location.href = "/";
     } catch (err: any) {
       setError(err.message || "Có lỗi xảy ra.");
     } finally {

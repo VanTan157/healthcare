@@ -1,51 +1,19 @@
-"use client";
+import { cookies } from "next/headers";
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
-import Cookies from "js-cookie";
 import {
-  FaUserCircle,
   FaCalendarAlt,
   FaCapsules,
   FaBell,
   FaRobot,
   FaCreditCard,
-  FaFileMedical,
-  FaVial,
-  FaSignOutAlt,
   FaShieldAlt,
 } from "react-icons/fa";
+import Menu from "./menu";
+import GlobalFadeInUpStyle from "./global-fade in-up";
 
-export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setIsLoggedIn(!!Cookies.get("access"));
-  }, []);
-
-  // Đóng menu khi click ra ngoài
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [menuOpen]);
-
-  const handleLogout = () => {
-    Cookies.remove("access");
-    Cookies.remove("refresh");
-    setIsLoggedIn(false);
-    setMenuOpen(false);
-    window.location.href = "/login";
-  };
+export default async function Header() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access")?.value;
 
   return (
     <header className="bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900 shadow-lg">
@@ -69,10 +37,10 @@ export default function Header() {
           </svg>
           Home
         </Link>
-        {isLoggedIn ? (
+        {accessToken ? (
           <div className="flex items-center gap-6">
             <Link
-              href={"/appointment"}
+              href={"/lichhen"}
               className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
             >
               <FaCalendarAlt className="text-blue-300" /> Đặt lịch hẹn
@@ -107,51 +75,7 @@ export default function Header() {
             >
               <FaRobot className="text-indigo-300" /> Chatbot
             </Link>
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setMenuOpen((v) => !v)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 focus:outline-none"
-              >
-                <FaUserCircle className="text-3xl text-white" />
-              </button>
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-50 animate-fade-in-up border border-gray-200">
-                  <div className="p-4 border-b border-gray-100 font-semibold text-gray-700">
-                    Tài khoản
-                  </div>
-                  <Link
-                    href={"/profile"}
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 transition"
-                  >
-                    <FaUserCircle /> Thông tin cá nhân
-                  </Link>
-                  <Link
-                    href={"/medical-record"}
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 transition"
-                  >
-                    <FaFileMedical /> Hồ sơ y tế
-                  </Link>
-                  <Link
-                    href={"/insurance"}
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 transition"
-                  >
-                    <FaShieldAlt /> Bảo hiểm
-                  </Link>
-                  <Link
-                    href={"/test-results"}
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 transition"
-                  >
-                    <FaVial /> Kết quả xét nghiệm
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-red-600 hover:bg-red-50 transition"
-                  >
-                    <FaSignOutAlt /> Đăng xuất
-                  </button>
-                </div>
-              )}
-            </div>
+            <Menu />
           </div>
         ) : (
           <div className="flex gap-6">
@@ -172,21 +96,7 @@ export default function Header() {
           </div>
         )}
       </nav>
-      <style jsx global>{`
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.2s ease;
-        }
-      `}</style>
+      <GlobalFadeInUpStyle />
     </header>
   );
 }

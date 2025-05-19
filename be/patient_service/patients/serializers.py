@@ -12,8 +12,8 @@ from .models import PatientProfile
 class PatientProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = PatientProfile
-        fields = ['user_id', 'date_of_birth', 'address', 'medical_history', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = ['id', 'user_id', 'date_of_birth', 'address', 'medical_history', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate_user_id(self, value):
         user = self.context['request'].user

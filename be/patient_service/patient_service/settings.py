@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-3=&to8--80w-99gaxa^$&+_ek#eif%n-!uv21db5*-p3y(m)7%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'patient_service','172.18.0.15','user_service:8000', '*']
+USE_X_FORWARDED_HOST = True
+ALLOWED_HOSTS = ['localhost', 'patient_service', '*']
 
 LOGGING = {
     'version': 1,
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'patients',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +83,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = [

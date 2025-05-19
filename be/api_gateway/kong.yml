@@ -11,7 +11,7 @@ services:
           - /api/token/refresh
         strip_path: false
   - name: patient_service
-    url: http://patient_service:8000/api/
+    url: http://patient_service:8000/
     routes:
       - name: patient_route
         paths:

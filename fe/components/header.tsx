@@ -81,10 +81,16 @@ export default async function Header() {
           ) : (
             <div className="flex items-center gap-6">
               <Link
+                href={"/doctor/medicines"}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
+              >
+                <FaCapsules className="text-blue-300" /> Quản lý thuốc
+              </Link>
+              <Link
                 href={"/doctor/appointments"}
                 className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
               >
-                <FaCalendarAlt className="text-blue-300" /> Xem lịch hẹn
+                <FaCalendarAlt className="text-blue-300" /> Quản lý lịch hẹn
               </Link>
               <Link
                 href={"/doctor/patients"}

@@ -39,6 +39,8 @@ services:
       - DATABASE_URL=postgres://user:password@postgres:5432/pharmacy_db
     depends_on:
       - postgres
+    networks:
+      - my-network
 
   laboratory_service:
     build: ./be/laboratory_service

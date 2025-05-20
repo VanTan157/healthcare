@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { Cookie } from "next/font/google";
 
 interface Patient {
   id: number;
@@ -34,6 +33,25 @@ interface Diagnosis {
   updated_at: string;
 }
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+  is_active: boolean;
+}
+
+interface Prescription {
+  id: number;
+  patient_id: number;
+  doctor_id: number;
+  diagnosis_id: number;
+  details: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
   const value = `; ${document.cookie}`;
@@ -46,6 +64,8 @@ export default function DoctorPatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
   const [doctorId, setDoctorId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
@@ -55,6 +75,24 @@ export default function DoctorPatientsPage() {
   });
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Prescription state
+  const [prescriptions, setPrescriptions] = useState<{
+    [diagnosisId: number]: Prescription[];
+  }>({});
+  const [prescriptionForm, setPrescriptionForm] = useState<{
+    [diagnosisId: number]: {
+      details: string;
+      status: string;
+      editingId?: number;
+    };
+  }>({});
+  const [prescriptionLoading, setPrescriptionLoading] = useState<{
+    [diagnosisId: number]: boolean;
+  }>({});
+  const [prescriptionError, setPrescriptionError] = useState<{
+    [diagnosisId: number]: string | null;
+  }>({});
 
   const token = Cookies.get("access");
 
@@ -66,12 +104,13 @@ export default function DoctorPatientsPage() {
         headers: { Authorization: `Bearer ${token}` },
       }).then((r) => r.json()),
       fetch("http://localhost:8080/api/doctors/").then((r) => r.json()),
-      fetch("http://localhost:8003/api/diagnoses/").then((r) => r.json()),
+      fetch("http://localhost:8080/api/diagnoses/").then((r) => r.json()),
+      fetch("http://localhost:8080/api/users/").then((r) => r.json()),
     ])
-      .then(([patientsData, doctorsData, diagnosesData]) => {
-        console.log(patientsData, doctorsData, diagnosesData);
+      .then(([patientsData, doctorsData, diagnosesData, usersData]) => {
         setPatients(patientsData);
         setDoctors(doctorsData);
+        setUsers(usersData);
 
         const userIdStr = getCookie("user_id");
         if (!userIdStr) {
@@ -95,13 +134,44 @@ export default function DoctorPatientsPage() {
           (d: Diagnosis) => d.doctor === doctor.id
         );
         setDiagnoses(filteredDiagnoses);
+
+        // Fetch prescriptions for each diagnosis
+        filteredDiagnoses.forEach((diag: Diagnosis) => {
+          fetchPrescriptions(diag.id);
+        });
+
         setLoading(false);
       })
       .catch(() => {
         setError("Lỗi khi tải dữ liệu.");
         setLoading(false);
       });
+    // eslint-disable-next-line
   }, []);
+
+  // Fetch prescriptions for a diagnosis
+  const fetchPrescriptions = async (diagnosisId: number) => {
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosisId]: true }));
+    setPrescriptionError((prev) => ({ ...prev, [diagnosisId]: null }));
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/prescriptions/by_diagnosisId/${diagnosisId}/`
+      );
+      if (!res.ok) {
+        setPrescriptions((prev) => ({ ...prev, [diagnosisId]: [] }));
+        setPrescriptionLoading((prev) => ({ ...prev, [diagnosisId]: false }));
+        return;
+      }
+      const data = await res.json();
+      setPrescriptions((prev) => ({ ...prev, [diagnosisId]: data }));
+    } catch {
+      setPrescriptionError((prev) => ({
+        ...prev,
+        [diagnosisId]: "Lỗi khi tải đơn thuốc.",
+      }));
+    }
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosisId]: false }));
+  };
 
   // Handle form input
   const handleChange = (
@@ -119,7 +189,7 @@ export default function DoctorPatientsPage() {
     setCreating(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:8003/api/diagnoses/", {
+      const res = await fetch("http://localhost:8080/api/diagnoses/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -133,15 +203,147 @@ export default function DoctorPatientsPage() {
       const newDiagnosis = await res.json();
       setDiagnoses([newDiagnosis, ...diagnoses]);
       setForm({ patient_id: "", diagnosis_date: "", description: "" });
+      // Fetch prescriptions for new diagnosis (should be empty)
+      fetchPrescriptions(newDiagnosis.id);
     } catch (err: any) {
       setError(err.message || "Có lỗi xảy ra.");
     }
     setCreating(false);
   };
 
+  // Prescription form handlers
+  const handlePrescriptionFormChange = (
+    diagnosisId: number,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setPrescriptionForm((prev) => ({
+      ...prev,
+      [diagnosisId]: {
+        ...prev[diagnosisId],
+        [e.target.name]: e.target.value,
+      },
+    }));
+  };
+
+  // Create prescription
+  const handleCreatePrescription = async (diagnosis: Diagnosis) => {
+    if (!doctorId) return;
+    const formData = prescriptionForm[diagnosis.id];
+    if (!formData?.details) return;
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosis.id]: true }));
+    setPrescriptionError((prev) => ({ ...prev, [diagnosis.id]: null }));
+    try {
+      const res = await fetch("http://localhost:8080/api/prescriptions/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patient_id: diagnosis.patient_id,
+          doctor_id: doctorId,
+          diagnosis_id: diagnosis.id,
+          details: formData.details,
+          status: formData.status || "pending",
+        }),
+      });
+      if (!res.ok) throw new Error("Tạo đơn thuốc thất bại");
+      await fetchPrescriptions(diagnosis.id);
+      setPrescriptionForm((prev) => ({
+        ...prev,
+        [diagnosis.id]: { details: "", status: "pending" },
+      }));
+    } catch (err: any) {
+      setPrescriptionError((prev) => ({
+        ...prev,
+        [diagnosis.id]: err.message || "Có lỗi xảy ra.",
+      }));
+    }
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosis.id]: false }));
+  };
+
+  // Edit prescription (set form to edit mode)
+  const handleEditPrescription = (
+    diagnosisId: number,
+    prescription: Prescription
+  ) => {
+    setPrescriptionForm((prev) => ({
+      ...prev,
+      [diagnosisId]: {
+        details: prescription.details,
+        status: prescription.status,
+        editingId: prescription.id,
+      },
+    }));
+  };
+
+  // Update prescription (PUT)
+  const handleUpdatePrescription = async (diagnosisId: number) => {
+    const formData = prescriptionForm[diagnosisId];
+    if (!formData?.editingId) return;
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosisId]: true }));
+    setPrescriptionError((prev) => ({ ...prev, [diagnosisId]: null }));
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/prescriptions/${formData.editingId}/`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: formData.status,
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("Cập nhật đơn thuốc thất bại");
+      await fetchPrescriptions(diagnosisId);
+      setPrescriptionForm((prev) => ({
+        ...prev,
+        [diagnosisId]: { details: "", status: "pending" },
+      }));
+    } catch (err: any) {
+      setPrescriptionError((prev) => ({
+        ...prev,
+        [diagnosisId]: err.message || "Có lỗi xảy ra.",
+      }));
+    }
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosisId]: false }));
+  };
+
+  // Delete prescription
+  const handleDeletePrescription = async (
+    diagnosisId: number,
+    prescriptionId: number
+  ) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa đơn thuốc này?")) return;
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosisId]: true }));
+    setPrescriptionError((prev) => ({ ...prev, [diagnosisId]: null }));
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/prescriptions/${prescriptionId}/`,
+        { method: "DELETE" }
+      );
+      if (!res.ok && res.status !== 204)
+        throw new Error("Xóa đơn thuốc thất bại");
+      await fetchPrescriptions(diagnosisId);
+    } catch (err: any) {
+      setPrescriptionError((prev) => ({
+        ...prev,
+        [diagnosisId]: err.message || "Có lỗi xảy ra.",
+      }));
+    }
+    setPrescriptionLoading((prev) => ({ ...prev, [diagnosisId]: false }));
+  };
+
+  // Cancel edit
+  const handleCancelEdit = (diagnosisId: number) => {
+    setPrescriptionForm((prev) => ({
+      ...prev,
+      [diagnosisId]: { details: "", status: "pending" },
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-10 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      <div className="mx-auto bg-white rounded-xl shadow-lg p-8 min-w-[80%]">
         <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
           Quản lý chẩn đoán bệnh nhân
         </h1>
@@ -179,7 +381,11 @@ export default function DoctorPatientsPage() {
                     <option value="">-- Chọn bệnh nhân --</option>
                     {patients?.map((p) => (
                       <option key={p.id} value={p.id}>
-                        #{p.id} - {p.address} - {p.date_of_birth}
+                        #{p.id} -
+                        {users.find((u) => u.id === p.user_id)?.username ||
+                          "Không rõ tên"}{" "}
+                        - {p.address} - {p.date_of_birth}
+                        {p.address} - {p.date_of_birth}
                       </option>
                     ))}
                   </select>
@@ -238,7 +444,7 @@ export default function DoctorPatientsPage() {
                       <th className="py-2 px-3 text-left">Bệnh nhân</th>
                       <th className="py-2 px-3 text-left">Ngày chẩn đoán</th>
                       <th className="py-2 px-3 text-left">Mô tả</th>
-                      <th className="py-2 px-3 text-left">Tạo lúc</th>
+                      <th className="py-2 px-3 text-left">Đơn thuốc</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -246,25 +452,162 @@ export default function DoctorPatientsPage() {
                       const patient = patients.find(
                         (p) => p.id === d.patient_id
                       );
+                      const prescList = prescriptions[d.id] || [];
+                      const prescForm = prescriptionForm[d.id] || {
+                        details: "",
+                        status: "pending",
+                      };
+                      const isEditing = !!prescForm.editingId;
                       return (
-                        <tr
-                          key={d.id}
-                          className="hover:bg-blue-50 transition border-b last:border-none"
-                        >
-                          <td className="py-2 px-3 font-mono">{d.id}</td>
-                          <td className="py-2 px-3">
-                            {patient
-                              ? `#${patient.id} - ${patient.address} - ${patient.date_of_birth}`
-                              : `#${d.patient_id}`}
-                          </td>
-                          <td className="py-2 px-3">
-                            {new Date(d.diagnosis_date).toLocaleString("vi-VN")}
-                          </td>
-                          <td className="py-2 px-3">{d.description}</td>
-                          <td className="py-2 px-3 text-gray-500 text-sm">
-                            {new Date(d.created_at).toLocaleString("vi-VN")}
-                          </td>
-                        </tr>
+                        <React.Fragment key={d.id}>
+                          <tr className="hover:bg-blue-50 transition border-b last:border-none">
+                            <td className="py-2 px-3 font-mono">{d.id}</td>
+                            <td className="py-2 px-3">
+                              {patient
+                                ? ` ${
+                                    users?.find((u) => u.id === patient.user_id)
+                                      ?.username
+                                  }`
+                                : `#${d.patient_id}`}
+                            </td>
+                            <td className="py-2 px-3">
+                              {new Date(d.diagnosis_date).toLocaleString(
+                                "vi-VN"
+                              )}
+                            </td>
+                            <td className="py-2 px-3">{d.description}</td>
+                            <td className="py-2 px-3">
+                              {/* Prescription actions */}
+                              {prescriptionLoading[d.id] && (
+                                <span className="text-blue-500 text-sm">
+                                  Đang xử lý...
+                                </span>
+                              )}
+                              {prescriptionError[d.id] && (
+                                <div className="text-red-500 text-xs mb-1">
+                                  {prescriptionError[d.id]}
+                                </div>
+                              )}
+                              {/* Nếu đang tạo hoặc sửa đơn thuốc */}
+                              {(prescList.length === 0 || isEditing) &&
+                                (prescForm.details !== undefined ||
+                                  isEditing) && (
+                                  <form
+                                    className="mt-2 space-y-2"
+                                    onSubmit={(e) => {
+                                      e.preventDefault();
+                                      if (isEditing) {
+                                        handleUpdatePrescription(d.id);
+                                      } else {
+                                        handleCreatePrescription(d);
+                                      }
+                                    }}
+                                  >
+                                    <textarea
+                                      name="details"
+                                      value={prescForm.details}
+                                      onChange={(e) =>
+                                        handlePrescriptionFormChange(d.id, e)
+                                      }
+                                      required
+                                      rows={2}
+                                      className="w-full border rounded px-2 py-1 text-sm"
+                                      placeholder="Chi tiết đơn thuốc..."
+                                    />
+                                    <select
+                                      name="status"
+                                      value={prescForm.status || "pending"}
+                                      onChange={(e) =>
+                                        handlePrescriptionFormChange(d.id, e)
+                                      }
+                                      className="w-full border rounded px-2 py-1 text-sm"
+                                    >
+                                      <option value="pending">Chờ phát</option>
+                                      <option value="dispensed">Đã phát</option>
+                                      <option value="cancelled">Đã hủy</option>
+                                    </select>
+                                    <div className="flex gap-2">
+                                      <button
+                                        type="submit"
+                                        disabled={prescriptionLoading[d.id]}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                                      >
+                                        {isEditing
+                                          ? "Cập nhật"
+                                          : "Tạo đơn thuốc"}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded text-sm"
+                                        onClick={() => handleCancelEdit(d.id)}
+                                      >
+                                        Hủy
+                                      </button>
+                                    </div>
+                                  </form>
+                                )}
+                              {/* Nếu đã có đơn thuốc, hiển thị danh sách và nút sửa/xóa */}
+                              {prescList.length > 0 && !isEditing && (
+                                <div className="space-y-2">
+                                  {prescList.map((presc) => (
+                                    <div
+                                      key={presc.id}
+                                      className="border rounded p-2 mb-1 bg-blue-50"
+                                    >
+                                      <div className="text-sm font-semibold">
+                                        Đơn thuốc
+                                      </div>
+                                      <div className="text-xs text-gray-700">
+                                        {presc.details}
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        Trạng thái:{" "}
+                                        <span
+                                          className={
+                                            presc.status === "pending"
+                                              ? "text-yellow-600"
+                                              : presc.status === "dispensed"
+                                              ? "text-green-600"
+                                              : "text-red-600"
+                                          }
+                                        >
+                                          {presc.status === "pending"
+                                            ? "Chờ phát"
+                                            : presc.status === "dispensed"
+                                            ? "Đã phát"
+                                            : "Đã hủy"}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 mt-1">
+                                        <button
+                                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs"
+                                          onClick={() =>
+                                            handleEditPrescription(d.id, presc)
+                                          }
+                                          type="button"
+                                        >
+                                          Sửa trạng thái
+                                        </button>
+                                        <button
+                                          className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs"
+                                          onClick={() =>
+                                            handleDeletePrescription(
+                                              d.id,
+                                              presc.id
+                                            )
+                                          }
+                                          type="button"
+                                        >
+                                          Xóa
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        </React.Fragment>
                       );
                     })}
                   </tbody>

@@ -26,3 +26,11 @@ services:
           - /api/doctors/
           - /api/diagnoses/
         strip_path: false
+  - name: pharmacy_service
+    url: http://pharmacy_service:8000/
+    routes:
+      - name: pharmacy_route
+        paths:
+          - /api/prescriptions/
+          - /api/medicines/
+        strip_path: false

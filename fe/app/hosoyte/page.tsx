@@ -12,10 +12,32 @@ interface User {
 }
 
 interface Patient {
+  id: number;
   user_id: number;
   date_of_birth: string;
   address: string;
   medical_history: string;
+}
+
+interface Diagnosis {
+  id: number;
+  patient_id: number;
+  doctor: number;
+  diagnosis_date: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Prescription {
+  id: number;
+  patient_id: number;
+  doctor_id: number;
+  diagnosis_id: number;
+  details: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function Page() {
@@ -29,6 +51,16 @@ export default function Page() {
     medical_history: "",
   });
   const [message, setMessage] = useState("");
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [diagnosisLoading, setDiagnosisLoading] = useState(false);
+
+  // New: prescriptions state, keyed by diagnosis_id
+  const [prescriptions, setPrescriptions] = useState<{
+    [diagnosisId: number]: Prescription[] | null;
+  }>({});
+  const [prescriptionLoading, setPrescriptionLoading] = useState<{
+    [diagnosisId: number]: boolean;
+  }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +102,71 @@ export default function Page() {
     };
     fetchData();
   }, []);
+
+  // Fetch diagnoses when patient is loaded
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      if (!patient) {
+        setDiagnoses([]);
+        return;
+      }
+      setDiagnosisLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/diagnoses/by_patientId/${patient.id}/`
+        );
+        if (!res.ok) throw new Error();
+        const data: Diagnosis[] = await res.json();
+        setDiagnoses(data);
+      } catch {
+        setDiagnoses([]);
+      }
+      setDiagnosisLoading(false);
+    };
+    if (patient) fetchDiagnoses();
+  }, [patient]);
+
+  // Fetch prescriptions for each diagnosis
+  useEffect(() => {
+    if (diagnoses.length === 0) return;
+    diagnoses.forEach((diagnosis) => {
+      if (prescriptions[diagnosis.id] !== undefined) return; // already fetched
+      setPrescriptionLoading((prev) => ({
+        ...prev,
+        [diagnosis.id]: true,
+      }));
+      fetch(
+        `http://localhost:8080/api/prescriptions/by_diagnosisId/${diagnosis.id}/`
+      )
+        .then(async (res) => {
+          if (!res.ok) {
+            setPrescriptions((prev) => ({
+              ...prev,
+              [diagnosis.id]: [],
+            }));
+            return;
+          }
+          const data: Prescription[] = await res.json();
+          setPrescriptions((prev) => ({
+            ...prev,
+            [diagnosis.id]: data,
+          }));
+        })
+        .catch(() => {
+          setPrescriptions((prev) => ({
+            ...prev,
+            [diagnosis.id]: [],
+          }));
+        })
+        .finally(() => {
+          setPrescriptionLoading((prev) => ({
+            ...prev,
+            [diagnosis.id]: false,
+          }));
+        });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [diagnoses]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -141,7 +238,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col items-center py-10">
-      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-xl transition-all duration-300 hover:shadow-2xl">
+      <div className="bg-white shadow-xl rounded-xl p-8 min-w-[80%] transition-all duration-300 hover:shadow-2xl">
         <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
           Hồ Sơ Y Tế Cá Nhân
         </h1>
@@ -192,7 +289,7 @@ export default function Page() {
                 />
               ) : (
                 <div className="px-3 py-2 bg-gray-100 rounded">
-                  {patient.date_of_birth}
+                  {patient?.date_of_birth}
                 </div>
               )}
             </div>
@@ -210,7 +307,7 @@ export default function Page() {
                 />
               ) : (
                 <div className="px-3 py-2 bg-gray-100 rounded">
-                  {patient.address}
+                  {patient?.address}
                 </div>
               )}
             </div>
@@ -228,7 +325,7 @@ export default function Page() {
                 />
               ) : (
                 <div className="px-3 py-2 bg-gray-100 rounded">
-                  {patient.medical_history}
+                  {patient?.medical_history}
                 </div>
               )}
             </div>
@@ -245,9 +342,9 @@ export default function Page() {
                     onClick={() => {
                       setEditMode(false);
                       setForm({
-                        date_of_birth: patient.date_of_birth,
-                        address: patient.address,
-                        medical_history: patient.medical_history,
+                        date_of_birth: patient?.date_of_birth || "",
+                        address: patient?.address || "",
+                        medical_history: patient?.medical_history || "",
                       });
                     }}
                     className="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition"
@@ -264,6 +361,108 @@ export default function Page() {
                 </button>
               )}
             </div>
+            {/* Các kết quả chuẩn đoán */}
+            <div className="mt-10">
+              <h2 className="text-xl font-semibold text-blue-700 mb-4">
+                Các kết quả chuẩn đoán
+              </h2>
+              {diagnosisLoading ? (
+                <div className="flex items-center justify-center py-6">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+                </div>
+              ) : diagnoses.length === 0 ? (
+                <div className="text-gray-500 text-center py-4">
+                  Chưa có kết quả chuẩn đoán nào.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {diagnoses.map((d) => (
+                    <div
+                      key={d.id}
+                      className="border rounded-lg p-4 bg-blue-50 shadow-sm"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium text-blue-800">
+                          Chuẩn đoán
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {new Date(d.diagnosis_date).toLocaleString("vi-VN")}
+                        </span>
+                      </div>
+                      <div className="mb-1">
+                        <span className="font-semibold text-gray-700">
+                          Bác sĩ ID:
+                        </span>{" "}
+                        {d.doctor}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-700">
+                          Mô tả:
+                        </span>{" "}
+                        {d.description}
+                      </div>
+                      {/* Đơn thuốc */}
+                      <div className="mt-4 pl-4 border-l-4 border-blue-200">
+                        <div className="font-semibold text-blue-600 mb-2">
+                          Đơn thuốc
+                        </div>
+                        {prescriptionLoading[d.id] ? (
+                          <div className="flex items-center gap-2 text-blue-400">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-400"></div>
+                            Đang tải đơn thuốc...
+                          </div>
+                        ) : prescriptions[d.id] &&
+                          prescriptions[d.id]!.length > 0 ? (
+                          <ul className="space-y-2">
+                            {prescriptions[d.id]!.map((p) => (
+                              <li
+                                key={p.id}
+                                className="bg-white rounded shadow px-4 py-2 border"
+                              >
+                                <div>
+                                  <span className="font-semibold">
+                                    Chi tiết:
+                                  </span>{" "}
+                                  {p.details}
+                                </div>
+                                <div>
+                                  <span className="font-semibold">
+                                    Trạng thái:
+                                  </span>{" "}
+                                  <span
+                                    className={
+                                      p.status === "pending"
+                                        ? "text-yellow-600"
+                                        : p.status === "completed"
+                                        ? "text-green-600"
+                                        : "text-gray-600"
+                                    }
+                                  >
+                                    {p.status}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                  Ngày tạo:{" "}
+                                  {new Date(p.created_at).toLocaleString(
+                                    "vi-VN"
+                                  )}
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="text-gray-500 text-sm">
+                            Không có đơn thuốc cho chuẩn đoán này.
+                          </div>
+                        )}
+                      </div>
+                      {/* End Đơn thuốc */}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* End Các kết quả chuẩn đoán */}
           </div>
         ) : (
           <div>

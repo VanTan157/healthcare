@@ -12,7 +12,7 @@ from .models import PatientProfile
 class PatientProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = PatientProfile
-        fields = ['id', 'user_id', 'date_of_birth', 'address', 'medical_history', 'created_at', 'updated_at']
+        fields = ['id','user_id', 'date_of_birth', 'address', 'medical_history', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate_user_id(self, value):
@@ -21,7 +21,7 @@ class PatientProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User is not authenticated.")
         if not user.is_active:
             raise serializers.ValidationError("User is not active.")
-        if user.role not in ['patient', 'admin']:
+        if user.role not in ['patient', 'admin', 'doctor', 'nurse', 'pharmacist', 'lab_technician', 'insurance_provider']:
             raise serializers.ValidationError("User must have role 'patient' or 'admin'.")
         if user.id != value:
             raise serializers.ValidationError("User ID does not match authenticated user.")

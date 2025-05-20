@@ -24,7 +24,7 @@ class CustomJWTAuthentication(JWTAuthentication):
         if not is_active:
             logger.error("User is not active")
             raise AuthenticationFailed('User is not active')
-        if role not in ['patient', 'admin']:
+        if role not in ['patient', 'admin', 'doctor', 'nurse', 'pharmacist', 'lab_technician', 'insurance_provider']:
             raise AuthenticationFailed('Invalid user role')
 
         class TempUser(AnonymousUser):

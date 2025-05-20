@@ -13,11 +13,18 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ['create', 'list']:  # Bỏ xác thực cho create và list
             return [permissions.AllowAny()]
-        elif self.action == 'list':
-            return [permissions.IsAuthenticated(), RolePermission()]
         return [permissions.IsAuthenticated()]
+
+    def list(self, request, *args, **kwargs):
+        """
+        Lấy danh sách tất cả user.
+        URL: GET /api/users/
+        """
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class RolePermission(permissions.BasePermission):
     def has_permission(self, request, view):

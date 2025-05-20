@@ -30,6 +30,8 @@ export default function LoginForm() {
       // Lưu access và refresh token vào cookies
       Cookies.set("access", data.access, { expires: 7 });
       Cookies.set("refresh", data.refresh, { expires: 7 });
+      Cookies.set("role", data.role, { expires: 7 });
+      Cookies.set("user_id", data.id, { expires: 7 });
       alert("Đăng nhập thành công!");
       window.location.href = "/";
     } catch (err: any) {

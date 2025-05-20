@@ -22,8 +22,31 @@ interface User {
   is_active: boolean;
 }
 
+interface Doctor {
+  id: number;
+  user_id: number;
+  specialty: string;
+  clinic: string;
+  schedule: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Patient {
+  id: number;
+  user_id: number;
+  date_of_birth: string;
+  address: string;
+  medical_history: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const API_BASE = "http://localhost:8080/api/appointments/";
 const USER_API = "http://localhost:8080/api/users/me/";
+const USERS_API = "http://localhost:8080/api/users/";
+const DOCTOR_API = "http://localhost:8003/api/doctors/";
+const PATIENT_API = "http://localhost:8080/api/patients/";
 
 const fetchAppointments = async (token: string) => {
   const res = await fetch(API_BASE, {
@@ -39,6 +62,28 @@ const fetchUser = async (token: string) => {
   });
   if (!res.ok) throw new Error("Failed to fetch user");
   return res.json() as Promise<User>;
+};
+
+const fetchAllUsers = async (token: string) => {
+  const res = await fetch(USERS_API, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json() as Promise<User[]>;
+};
+
+const fetchAllDoctors = async () => {
+  const res = await fetch(DOCTOR_API);
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json() as Promise<Doctor[]>;
+};
+
+const fetchAllPatients = async (token: string) => {
+  const res = await fetch(PATIENT_API, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json() as Promise<Patient[]>;
 };
 
 const deleteAppointment = async (id: number, token: string) => {
@@ -75,6 +120,8 @@ export default function LichHenPage() {
   });
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState("");
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
 
   const token = Cookies.get("access") || "";
 
@@ -93,8 +140,36 @@ export default function LichHenPage() {
     setLoading(false);
   };
 
+  const loadDoctors = async () => {
+    setLoading(true);
+    try {
+      const allDoctors = await fetchAllDoctors();
+      console.log(allDoctors);
+      setDoctors(allDoctors);
+    } catch (err) {
+      setError("Không thể tải dữ liệu");
+    }
+    setLoading(false);
+  };
+
+  const loadPatients = async () => {
+    setLoading(true);
+    try {
+      const allPatients = await fetchAllPatients(token);
+      console.log(allPatients);
+      setPatients(allPatients);
+    } catch (err) {
+      setError("Không thể tải dữ liệu");
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    if (token) loadData();
+    if (token) {
+      loadData();
+      loadDoctors();
+      loadPatients();
+    }
     // eslint-disable-next-line
   }, [token]);
 
@@ -112,15 +187,25 @@ export default function LichHenPage() {
     e.preventDefault();
     if (!user) return;
     try {
-      await createAppointment(
+      const patient = patients.find((p) => p.user_id === user.id);
+      if (!patient) {
+        setError("Không tìm thấy thông tin bệnh nhân cho người dùng này.");
+        return;
+      }
+      console.log(form.doctor_id);
+      console.log(user.id);
+      console.log(form.appointment_date);
+      console.log(form.reason);
+      const res = await createAppointment(
         {
-          patient: user.id,
+          patient: patient.id,
           doctor_id: Number(form.doctor_id),
           appointment_date: form.appointment_date,
           reason: form.reason,
         },
         token
       );
+      console.log(res);
       setShowModal(false);
       setForm({ doctor_id: "", appointment_date: "", reason: "" });
       loadData();
@@ -216,18 +301,23 @@ export default function LichHenPage() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <label className="block font-medium mb-1 text-gray-700">
-                  ID Bác sĩ
+                  Chọn bác sĩ
                 </label>
-                <input
-                  type="number"
+                <select
                   required
                   className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   value={form.doctor_id}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, doctor_id: e.target.value }))
                   }
-                  placeholder="Nhập ID bác sĩ"
-                />
+                >
+                  <option value="">-- Chọn bác sĩ --</option>
+                  {doctors.map((doc) => (
+                    <option key={doc.id} value={doc.id}>
+                      {doc.clinic} ({doc.specialty})
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block font-medium mb-1 text-gray-700">

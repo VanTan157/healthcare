@@ -18,3 +18,11 @@ services:
           - /api/patients/
           - /api/appointments/
         strip_path: false
+  - name: doctor_service
+    url: http://doctor_service:8000/
+    routes:
+      - name: doctor_route
+        paths:
+          - /api/doctors/
+          - /api/diagnoses/
+        strip_path: false

@@ -29,7 +29,8 @@ services:
       - DATABASE_URL=postgres://user:password@postgres:5432/doctor_db
     depends_on:
       - postgres
-
+    networks:
+      - my-network
   pharmacy_service:
     build: ./be/pharmacy_service
     ports:

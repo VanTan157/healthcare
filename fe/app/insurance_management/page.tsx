@@ -93,18 +93,6 @@ export default function InsuranceManagementPage() {
     setContractForm({ ...contractForm, [e.target.name]: e.target.value });
   };
 
-  const handleCreateContract = () => {
-    setContractForm({});
-    setContractFormMode("create");
-    setSelectedContract(null);
-  };
-
-  const handleEditContract = (contract: InsuranceContract) => {
-    setContractForm(contract);
-    setContractFormMode("edit");
-    setSelectedContract(contract);
-  };
-
   const handleSubmitContract = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -250,12 +238,6 @@ export default function InsuranceManagementPage() {
               <h2 className="text-xl font-semibold text-indigo-700">
                 Danh sách hợp đồng bảo hiểm
               </h2>
-              <button
-                className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded shadow transition"
-                onClick={handleCreateContract}
-              >
-                + Thêm hợp đồng
-              </button>
             </div>
             <div className="overflow-x-auto rounded shadow mb-6">
               <table className="min-w-full bg-white">
@@ -298,108 +280,6 @@ export default function InsuranceManagementPage() {
                 </tbody>
               </table>
             </div>
-            {/* Contract Form */}
-            {(contractFormMode === "create" || contractFormMode === "edit") && (
-              <div className="bg-indigo-50 rounded p-6 shadow mb-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  {contractFormMode === "create"
-                    ? "Thêm hợp đồng"
-                    : "Sửa hợp đồng"}
-                </h3>
-                <form
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                  onSubmit={handleSubmitContract}
-                >
-                  <div>
-                    <label className="block font-medium mb-1">
-                      Mã bệnh nhân
-                    </label>
-                    <input
-                      name="patient_id"
-                      type="number"
-                      required
-                      className="w-full border rounded px-3 py-2"
-                      value={contractForm.patient_id ?? ""}
-                      onChange={handleContractFormChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium mb-1">
-                      Số hợp đồng
-                    </label>
-                    <input
-                      name="policy_number"
-                      required
-                      className="w-full border rounded px-3 py-2"
-                      value={contractForm.policy_number ?? ""}
-                      onChange={handleContractFormChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium mb-1">
-                      Nhà cung cấp
-                    </label>
-                    <input
-                      name="provider"
-                      required
-                      className="w-full border rounded px-3 py-2"
-                      value={contractForm.provider ?? ""}
-                      onChange={handleContractFormChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium mb-1">Từ ngày</label>
-                    <input
-                      name="start_date"
-                      type="date"
-                      required
-                      className="w-full border rounded px-3 py-2"
-                      value={contractForm.start_date ?? ""}
-                      onChange={handleContractFormChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium mb-1">Đến ngày</label>
-                    <input
-                      name="end_date"
-                      type="date"
-                      required
-                      className="w-full border rounded px-3 py-2"
-                      value={contractForm.end_date ?? ""}
-                      onChange={handleContractFormChange}
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block font-medium mb-1">Chi tiết</label>
-                    <textarea
-                      name="details"
-                      required
-                      className="w-full border rounded px-3 py-2"
-                      value={contractForm.details ?? ""}
-                      onChange={handleContractFormChange}
-                    />
-                  </div>
-                  <div className="md:col-span-2 flex gap-3 mt-2">
-                    <button
-                      type="submit"
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow transition"
-                    >
-                      {contractFormMode === "create" ? "Tạo mới" : "Cập nhật"}
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded transition"
-                      onClick={() => {
-                        setContractFormMode(null);
-                        setContractForm({});
-                      }}
-                    >
-                      Hủy
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
           </div>
         )}
 
@@ -410,12 +290,6 @@ export default function InsuranceManagementPage() {
               <h2 className="text-xl font-semibold text-indigo-700">
                 Danh sách yêu cầu bồi thường
               </h2>
-              <button
-                className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded shadow transition"
-                onClick={handleCreateClaim}
-              >
-                + Thêm yêu cầu
-              </button>
             </div>
             <div className="overflow-x-auto rounded shadow mb-6">
               <table className="min-w-full bg-white">
@@ -501,75 +375,6 @@ export default function InsuranceManagementPage() {
                   className="grid grid-cols-1 md:grid-cols-2 gap-4"
                   onSubmit={handleSubmitClaim}
                 >
-                  {claimFormMode === "create" && (
-                    <>
-                      <div>
-                        <label className="block font-medium mb-1">
-                          ID hợp đồng
-                        </label>
-                        <input
-                          name="contract"
-                          type="number"
-                          required
-                          className="w-full border rounded px-3 py-2"
-                          value={claimForm.contract ?? ""}
-                          onChange={handleClaimFormChange}
-                        />
-                      </div>
-                      <div>
-                        <label className="block font-medium mb-1">
-                          Số tiền
-                        </label>
-                        <input
-                          name="amount"
-                          type="number"
-                          required
-                          className="w-full border rounded px-3 py-2"
-                          value={claimForm.amount ?? ""}
-                          onChange={handleClaimFormChange}
-                        />
-                      </div>
-                      <div>
-                        <label className="block font-medium mb-1">
-                          Ngày yêu cầu
-                        </label>
-                        <input
-                          name="claim_date"
-                          type="date"
-                          required
-                          className="w-full border rounded px-3 py-2"
-                          value={claimForm.claim_date?.slice(0, 10) ?? ""}
-                          onChange={handleClaimFormChange}
-                        />
-                      </div>
-                      <div>
-                        <label className="block font-medium mb-1">Mô tả</label>
-                        <textarea
-                          name="description"
-                          required
-                          className="w-full border rounded px-3 py-2"
-                          value={claimForm.description ?? ""}
-                          onChange={handleClaimFormChange}
-                        />
-                      </div>
-                      <div>
-                        <label className="block font-medium mb-1">
-                          Trạng thái
-                        </label>
-                        <select
-                          name="status"
-                          required
-                          className="w-full border rounded px-3 py-2"
-                          value={claimForm.status ?? "pending"}
-                          onChange={handleClaimFormChange}
-                        >
-                          <option value="pending">Chờ duyệt</option>
-                          <option value="approved">Duyệt</option>
-                          <option value="rejected">Từ chối</option>
-                        </select>
-                      </div>
-                    </>
-                  )}
                   {claimFormMode === "edit" && (
                     <div>
                       <label className="block font-medium mb-1">

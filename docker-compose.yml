@@ -61,6 +61,8 @@ services:
       - DATABASE_URL=postgres://user:password@postgres:5432/insurance_db
     depends_on:
       - postgres
+    networks:
+      - my-network
 
   notification_service:
     build: ./be/notification_service

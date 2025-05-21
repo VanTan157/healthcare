@@ -81,12 +81,6 @@ export default async function Header() {
           ) : role === "doctor" ? (
             <div className="flex items-center gap-6">
               <Link
-                href={"/doctor/medicines"}
-                className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
-              >
-                <FaCapsules className="text-blue-300" /> Quản lý thuốc
-              </Link>
-              <Link
                 href={"/doctor/appointments"}
                 className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
               >
@@ -136,6 +130,26 @@ export default async function Header() {
                   <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z" />
                 </svg>
                 Hồ sơ
+              </Link>
+              <Menu />
+            </div>
+          ) : role === "pharmacist" ? (
+            <div className="flex items-center gap-6">
+              <Link
+                href={"/pharamacist/medicines"}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
+              >
+                <FaCapsules className="text-blue-300" /> Quản lý thuốc
+              </Link>
+              <Menu />
+            </div>
+          ) : role === "insurance_provider" ? (
+            <div className="flex items-center gap-6">
+              <Link
+                href={"/insurance_management"}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
+              >
+                <FaShieldAlt className="text-blue-300" /> Quản lý bảo hiểm
               </Link>
               <Menu />
             </div>

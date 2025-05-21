@@ -42,3 +42,11 @@ services:
           - /api/lab_requests/
           - /api/lab_results/
         strip_path: false
+  - name: insurance_service
+    url: http://insurance_service:8000/
+    routes:
+      - name: insurance_route
+        paths:
+          - /api/insurance_contracts/
+          - /api/claims/
+        strip_path: false

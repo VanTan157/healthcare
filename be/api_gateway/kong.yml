@@ -34,3 +34,11 @@ services:
           - /api/prescriptions/
           - /api/medicines/
         strip_path: false
+  - name: laboratory_service
+    url: http://laboratory_service:8000/
+    routes:
+      - name: laboratory_route
+        paths:
+          - /api/lab_requests/
+          - /api/lab_results/
+        strip_path: false

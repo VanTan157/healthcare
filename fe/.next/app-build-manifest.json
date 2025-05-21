@@ -6,35 +6,30 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(auth)/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(auth)/login/page.js"
-    ],
     "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/doctor/patients/page": [
+    "/doctor/laboratory/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/doctor/patients/page.js"
+      "static/chunks/app/doctor/laboratory/page.js"
     ],
-    "/hosoyte/page": [
+    "/(auth)/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/hosoyte/page.js"
+      "static/chunks/app/(auth)/login/page.js"
     ],
-    "/doctor/appointments/page": [
+    "/lab_technician/laboratory/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/doctor/appointments/page.js"
+      "static/chunks/app/lab_technician/laboratory/page.js"
     ],
-    "/doctor/profile/page": [
+    "/test-results/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/doctor/profile/page.js"
+      "static/chunks/app/test-results/page.js"
     ]
   }
 }

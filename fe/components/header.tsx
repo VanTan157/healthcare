@@ -78,7 +78,7 @@ export default async function Header() {
               </Link>
               <Menu />
             </div>
-          ) : (
+          ) : role === "doctor" ? (
             <div className="flex items-center gap-6">
               <Link
                 href={"/doctor/medicines"}
@@ -106,6 +106,25 @@ export default async function Header() {
                 Bệnh nhân
               </Link>
               <Link
+                href={"/doctor/laboratory"}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
+              >
+                <svg
+                  className="w-5 h-5 text-blue-300"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-7 4h10a2 2 0 002-2v-5a7 7 0 10-14 0v5a2 2 0 002 2z"
+                  />
+                </svg>
+                Tạo yêu cầu xét nghiệm
+              </Link>
+              <Link
                 href={"/doctor/profile"}
                 className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-yellow-600 transition-all duration-200"
               >
@@ -117,6 +136,29 @@ export default async function Header() {
                   <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z" />
                 </svg>
                 Hồ sơ
+              </Link>
+              <Menu />
+            </div>
+          ) : (
+            <div className="flex items-center gap-6">
+              <Link
+                href={"/lab_technician/laboratory"}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
+              >
+                <svg
+                  className="w-5 h-5 text-blue-300"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-7 4h10a2 2 0 002-2v-5a7 7 0 10-14 0v5a2 2 0 002 2z"
+                  />
+                </svg>
+                Quản lý xét nghiệm
               </Link>
               <Menu />
             </div>

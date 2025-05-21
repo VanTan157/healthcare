@@ -1,9 +1,8 @@
 {
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/doctor/patients/page": "app/doctor/patients/page.js",
-  "/(auth)/login/page": "app/(auth)/login/page.js",
   "/page": "app/page.js",
-  "/doctor/appointments/page": "app/doctor/appointments/page.js",
-  "/hosoyte/page": "app/hosoyte/page.js",
-  "/doctor/profile/page": "app/doctor/profile/page.js"
+  "/doctor/laboratory/page": "app/doctor/laboratory/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/lab_technician/laboratory/page": "app/lab_technician/laboratory/page.js",
+  "/test-results/page": "app/test-results/page.js"
 }

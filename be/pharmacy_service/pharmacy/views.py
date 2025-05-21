@@ -18,7 +18,6 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """
         Cập nhật trạng thái đơn thuốc (pending, dispensed, cancelled).
-        Chỉ cho phép cập nhật trường status.
         """
         # Lấy instance của đơn thuốc từ database
         instance = self.get_object()

@@ -50,6 +50,8 @@ services:
       - DATABASE_URL=postgres://user:password@postgres:5432/laboratory_db
     depends_on:
       - postgres
+    networks:
+      - my-network
 
   insurance_service:
     build: ./be/insurance_service

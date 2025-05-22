@@ -153,6 +153,16 @@ export default async function Header() {
               </Link>
               <Menu />
             </div>
+          ) : role === "admin" ? (
+            <div className="flex items-center gap-6">
+              <Link
+                href={"/admin"}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-white hover:bg-blue-600 transition-all duration-200"
+              >
+                <FaShieldAlt className="text-blue-300" /> Quản lý người dùng
+              </Link>
+              <Menu />
+            </div>
           ) : (
             <div className="flex items-center gap-6">
               <Link

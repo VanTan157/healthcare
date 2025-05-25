@@ -121,19 +121,20 @@ class ActionGoiYThuoc(Action):
             "luu_y": ""
         })
 
+        # Lưu các slot
+        slots = [
+            SlotSet("diagnosis", diagnosis),
+            SlotSet("thuoc", medication_info["thuoc"]),
+            SlotSet("huong_dan", medication_info["huong_dan"]),
+            SlotSet("luu_y", medication_info["luu_y"])
+        ]
+
+        # Nếu không có gợi ý thuốc, trả về slot và để utter_no_medication xử lý
         if medication_info["thuoc"] == "Không có gợi ý thuốc cụ thể":
-            dispatcher.utter_message(
-                text=f"Không tìm thấy gợi ý thuốc cho bệnh {diagnosis}. "
-                     f"Vui lòng gặp bác sĩ để được kê đơn phù hợp."
-            )
-        else:
-            dispatcher.utter_message(
-                text=f"Gợi ý điều trị cho bệnh {diagnosis}:\n"
-                     f"- Thuốc: {medication_info['thuoc']}\n"
-                     f"- Hướng dẫn: {medication_info['huong_dan']}\n"
-                     f"- Lưu ý: {medication_info['luu_y']}"
-            )
-        return [SlotSet("diagnosis", diagnosis)]  # Lưu diagnosis để sử dụng tiếp
+            return slots + [FollowupAction("utter_no_medication")]
+        
+        # Trả về slot để utter_medication sử dụng
+        return slots
 
 class ActionDatLichHen(Action):
     def name(self) -> Text:

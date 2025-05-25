@@ -727,6 +727,9 @@ video {
 .h-96 {
   height: 24rem;
 }
+.h-\[70\%\] {
+  height: 70%;
+}
 .h-screen {
   height: 100vh;
 }

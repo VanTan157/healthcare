@@ -151,7 +151,7 @@ export default function ChatbotPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-200">
-      <div className="min-w-[70%] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="min-w-[70%] h-[70%]! bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-5 flex items-center gap-3">
           <img
             src={BOT_AVATAR}

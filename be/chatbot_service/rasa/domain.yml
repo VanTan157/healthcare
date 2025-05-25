@@ -25,6 +25,18 @@ slots:
     type: text
     mappings:
       - type: from_text
+  thuoc:
+    type: text
+    mappings:
+      - type: custom
+  huong_dan:
+    type: text
+    mappings:
+      - type: custom
+  luu_y:
+    type: text
+    mappings:
+      - type: custom
 actions:
   - action_chan_doan_benh
   - action_goi_y_thuoc

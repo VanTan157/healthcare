@@ -1,14 +1,53 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Cookies from "js-cookie";
 
 type Message = {
   sender: "user" | "bot";
   text: string;
 };
+interface Patient {
+  id: number;
+  user_id: number;
+  date_of_birth: string;
+  address: string;
+  medical_history: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Doctor {
+  id: number;
+  user_id: number;
+  specialty: string;
+  clinic: string;
+  schedule: string;
+  created_at: string;
+  updated_at: string;
+}
+
+const USER_API = "http://localhost:8080/api/users/me/";
+const DOCTOR_API = "http://localhost:8003/api/doctors/";
+const PATIENT_API = "http://localhost:8080/api/patients/";
 
 const BOT_AVATAR = "https://cdn-icons-png.flaticon.com/512/4712/4712035.png";
 const USER_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+const fetchAllDoctors = async () => {
+  const res = await fetch(DOCTOR_API);
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json() as Promise<Doctor[]>;
+};
+
+const fetchAllPatients = async (token: string) => {
+  const res = await fetch(PATIENT_API, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json() as Promise<Patient[]>;
+};
+
+// (Removed all top-level useState, useEffect, and related variables. Move them inside the component.)
 
 const exampleQuestions = [
   "Tôi bị sốt, ho, đau họng",
@@ -18,6 +57,7 @@ const exampleQuestions = [
 ];
 
 export default function ChatbotPage() {
+  // State for chatbot messages
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: "bot",
@@ -26,7 +66,40 @@ export default function ChatbotPage() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // State for patient info
+  const [patient, setPatient] = useState<Patient | null>(null);
+
+  // Optionally, you can keep these if you plan to use them in the UI
+  // const [error, setError] = useState("");
+  // const [doctors, setDoctors] = useState<Doctor[]>([]);
+  // const [patients, setPatients] = useState<Patient[]>([]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const token = Cookies.get("access") || "";
+  const userId = Cookies.get("user_id") ? Number(Cookies.get("user_id")) : null;
+
+  // Fetch patient info on mount
+  useEffect(() => {
+    const fetchPatient = async () => {
+      if (!token || !userId) return;
+      try {
+        const res = await fetch(PATIENT_API, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const allPatients: Patient[] = await res.json();
+        const foundPatient = allPatients.find((p) => p.user_id === userId);
+        setPatient(foundPatient || null);
+        console.log("Patient info:", foundPatient);
+      } catch {
+        // Optionally handle error
+      }
+    };
+    fetchPatient();
+    // eslint-disable-next-line
+  }, [token, userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,7 +115,7 @@ export default function ChatbotPage() {
       const res = await fetch("http://localhost:8080/api/chat/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ patient_id: 1, message: msg }),
+        body: JSON.stringify({ patient_id: patient?.id, message: msg }),
       });
       const data = await res.json();
       setMessages((prev) => [
@@ -78,7 +151,7 @@ export default function ChatbotPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-200">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="min-w-[70%] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-5 flex items-center gap-3">
           <img
             src={BOT_AVATAR}

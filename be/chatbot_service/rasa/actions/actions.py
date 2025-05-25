@@ -83,9 +83,9 @@ class ActionChanDoanBenh(Action):
         try:
             benh = MODEL.predict([trieu_chung_vector])[0].replace('_', ' ')
             logger.info(f"Chẩn đoán: {benh}")
-            response_text = f"Dựa trên các triệu chứng ({', '.join(detected_symptoms)}), bạn có thể mắc {benh}. Vui lòng gặp bác sĩ để được chẩn đoán và điều trị chính xác."
-            dispatcher.utter_message(text=response_text)
-            return [SlotSet("diagnosis", benh), SlotSet("symptoms", detected_symptoms)]
+            # Lưu symptoms dưới dạng chuỗi
+            symptoms_str = ', '.join(detected_symptoms)
+            return [SlotSet("diagnosis", benh), SlotSet("symptoms", symptoms_str)]
         except Exception as e:
             logger.error(f"Lỗi khi chẩn đoán: {str(e)}")
             dispatcher.utter_message(
@@ -100,12 +100,9 @@ class ActionGoiYThuoc(Action):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         # Lấy slot diagnosis
         diagnosis = tracker.get_slot("diagnosis") or "unknown"
-        # Nếu diagnosis chứa hai lần chữ "bệnh", chỉ giữ lại một
-        if diagnosis.lower().count("bệnh") > 1:
-            diagnosis = re.sub(r'(bệnh\s*)+', 'bệnh ', diagnosis, flags=re.IGNORECASE).strip()
-        # Nếu diagnosis không chứa chữ "bệnh", thêm vào đầu
-        if "bệnh" not in diagnosis.lower():
-            diagnosis = "bệnh " + diagnosis
+        # Loại bỏ từ "bệnh" nếu diagnosis bắt đầu bằng "bệnh "
+        if diagnosis.startswith("bệnh "):
+            diagnosis = diagnosis[5:].strip()
         trieu_chung_text = tracker.latest_message.get('text', '').lower().strip()
         logger.info(f"Yêu cầu gợi ý thuốc, slot diagnosis: {diagnosis}, tin nhắn: {trieu_chung_text}")
 

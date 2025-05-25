@@ -1,8 +1,5 @@
 {
-  "/page": "app/page.js",
-  "/(auth)/login/page": "app/(auth)/login/page.js",
-  "/lichhen/page": "app/lichhen/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/doctor/profile/page": "app/doctor/profile/page.js",
-  "/insurance/page": "app/insurance/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/chatbot/page": "app/chatbot/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js"
 }

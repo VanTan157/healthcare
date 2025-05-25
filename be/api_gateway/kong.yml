@@ -25,6 +25,7 @@ services:
         paths:
           - /api/doctors/
           - /api/diagnoses/
+          - /api/diagnose/
         strip_path: false
   - name: pharmacy_service
     url: http://pharmacy_service:8000/
@@ -49,4 +50,11 @@ services:
         paths:
           - /api/insurance_contracts/
           - /api/claims/
+        strip_path: false
+  - name: chatbot_fastapi
+    url: http://chatbot_fastapi:8000/
+    routes:
+      - name: chatbot_route
+        paths:
+          - /api/chat/
         strip_path: false

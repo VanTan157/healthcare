@@ -1,0 +1,38 @@
+version: "3.1"
+rules:
+  - rule: Chào hỏi
+    steps:
+      - intent: chao_hoi
+      - action: utter_chao_hoi
+  - rule: Tạm biệt
+    steps:
+      - intent: tam_biet
+      - action: utter_tam_biet
+  - rule: Xử lý yêu cầu ngoài phạm vi
+    steps:
+      - intent: out_of_scope
+      - action: utter_out_of_scope
+  - rule: Chẩn đoán bệnh
+    steps:
+      - intent: chan_doan_benh
+      - action: action_chan_doan_benh
+      - action: utter_diagnosis
+  - rule: Gợi ý thuốc
+    steps:
+      - intent: goi_y_thuoc
+      - action: action_goi_y_thuoc
+      - action: utter_medication
+  - rule: Hỏi lại triệu chứng
+    steps:
+      - intent: hoi_lai_trieu_chung
+      - action: action_hoi_lai_trieu_chung
+      - action: utter_ask_symptoms
+  - rule: Xác nhận triệu chứng
+    steps:
+      - intent: xac_nhan_trieu_chung
+      - action: action_xac_nhan_trieu_chung
+      - action: utter_confirm_symptoms
+  - rule: Đặt lịch hẹn
+    steps:
+      - intent: dat_lich_hen
+      - action: action_dat_lich_hen

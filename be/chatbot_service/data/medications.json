@@ -1,0 +1,77 @@
+{
+  "Cảm cúm": {
+    "thuoc": "Paracetamol 500mg, Thuốc ho Dextromethorphan 10mg",
+    "huong_dan": "Paracetamol: 1 viên mỗi 6 giờ khi sốt hoặc đau, tối đa 4 viên/ngày. Dextromethorphan: 10ml mỗi 8 giờ nếu ho.",
+    "luu_y": "Uống nhiều nước, nghỉ ngơi, tránh lây lan. Gặp bác sĩ nếu sốt cao kéo dài quá 3 ngày hoặc khó thở."
+  },
+  "Viêm phổi": {
+    "thuoc": "Amoxicillin 500mg, Azithromycin 500mg",
+    "huong_dan": "Amoxicillin: 1 viên 3 lần/ngày trong 7-10 ngày. Azithromycin: 1 viên/ngày trong 5 ngày nếu dị ứng Amoxicillin.",
+    "luu_y": "Hoàn thành liệu trình kháng sinh. Gặp bác sĩ ngay nếu khó thở tăng, sốt cao hoặc đau ngực dữ dội."
+  },
+  "Viêm phế quản": {
+    "thuoc": "Thuốc long đờm Acetylcysteine 200mg, Bình xịt Albuterol",
+    "huong_dan": "Acetylcysteine: 1 gói hòa tan uống 2 lần/ngày. Albuterol: 2 lần xịt mỗi 4-6 giờ khi khó thở.",
+    "luu_y": "Tránh khói thuốc, không khí lạnh. Gặp bác sĩ nếu ho kéo dài quá 7 ngày hoặc có máu trong đờm."
+  },
+  "Sốt xuất huyết": {
+    "thuoc": "Paracetamol 500mg",
+    "huong_dan": "1 viên mỗi 6 giờ khi sốt hoặc đau, tối đa 4 viên/ngày.",
+    "luu_y": "Không dùng aspirin hoặc ibuprofen. Theo dõi dấu hiệu cảnh báo như đau bụng dữ dội, chảy máu, và nhập viện ngay nếu cần."
+  },
+  "Nhiễm trùng đường tiết niệu": {
+    "thuoc": "Nitrofurantoin 100mg",
+    "huong_dan": "1 viên 2 lần/ngày trong 5-7 ngày, uống cùng bữa ăn.",
+    "luu_y": "Uống nhiều nước, vệ sinh sạch sẽ. Gặp bác sĩ nếu triệu chứng không cải thiện sau 3 ngày hoặc sốt cao."
+  },
+  "Viêm dạ dày": {
+    "thuoc": "Omeprazole 20mg, Thuốc kháng axit Maalox",
+    "huong_dan": "Omeprazole: 1 viên mỗi ngày trước bữa sáng trong 4-8 tuần. Maalox: 1-2 viên nhai sau bữa ăn hoặc khi đau.",
+    "luu_y": "Tránh đồ ăn cay, chua, rượu bia. Gặp bác sĩ nếu có dấu hiệu xuất huyết tiêu hóa như phân đen."
+  },
+  "Đau nửa đầu": {
+    "thuoc": "Ibuprofen 400mg, Sumatriptan 50mg",
+    "huong_dan": "Ibuprofen: 1 viên mỗi 8 giờ khi đau. Sumatriptan: 1 viên ngay khi bắt đầu cơn đau nửa đầu, không quá 2 viên/ngày.",
+    "luu_y": "Nghỉ ngơi trong phòng tối, tránh tiếng ồn. Gặp bác sĩ nếu cơn đau lặp lại thường xuyên hoặc không đáp ứng thuốc."
+  },
+  "Tăng huyết áp": {
+    "thuoc": "Amlodipine 5mg, Losartan 50mg",
+    "huong_dan": "Amlodipine: 1 viên mỗi ngày vào buổi sáng. Losartan: 1 viên mỗi ngày nếu cần kết hợp.",
+    "luu_y": "Theo dõi huyết áp thường xuyên, ăn nhạt, tập thể dục nhẹ. Gặp bác sĩ nếu chóng mặt hoặc đau ngực."
+  },
+  "Viêm mũi dị ứng": {
+    "thuoc": "Cetirizine 10mg, Xịt mũi Fluticasone 50mcg",
+    "huong_dan": "Cetirizine: 1 viên mỗi tối. Fluticasone: 1 lần xịt mỗi lỗ mũi 2 lần/ngày.",
+    "luu_y": "Tránh bụi, phấn hoa, lông động vật. Gặp bác sĩ nếu triệu chứng không giảm sau 7 ngày."
+  },
+  "Tiêu chảy cấp": {
+    "thuoc": "Loperamide 2mg, Bù dịch ORS",
+    "huong_dan": "Loperamide: 2 viên sau lần đi lỏng đầu tiên, sau đó 1 viên mỗi lần đi lỏng, tối đa 8 viên/ngày. ORS: Hòa 1 gói với 1 lít nước, uống dần trong ngày.",
+    "luu_y": "Uống nhiều nước, ăn nhẹ. Gặp bác sĩ nếu tiêu chảy kéo dài quá 2 ngày hoặc có máu trong phân."
+  },
+  "Viêm gan virus": {
+    "thuoc": "Thuốc hỗ trợ gan (Silymarin), Vitamin B phức hợp",
+    "huong_dan": "Silymarin: 1 viên 2 lần/ngày sau ăn. Vitamin B: 1 viên mỗi ngày.",
+    "luu_y": "Nghỉ ngơi, ăn uống lành mạnh, tránh rượu bia. Gặp bác sĩ để xét nghiệm và theo dõi chức năng gan."
+  },
+  "Đau thắt lưng": {
+    "thuoc": "Ibuprofen 400mg, Miếng dán Salonpas",
+    "huong_dan": "Ibuprofen: 1 viên mỗi 8 giờ khi đau, tối đa 3 viên/ngày. Salonpas: Dán lên vùng đau 1-2 lần/ngày.",
+    "luu_y": "Tập vật lý trị liệu, tránh cúi gập người. Gặp bác sĩ nếu đau lan xuống chân hoặc kéo dài quá 7 ngày."
+  },
+  "Nhiễm trùng da": {
+    "thuoc": "Mupirocin 2% (thuốc bôi), Cephalexin 500mg",
+    "huong_dan": "Mupirocin: Bôi lên vùng da nhiễm 2-3 lần/ngày. Cephalexin: 1 viên 4 lần/ngày trong 7 ngày nếu nhiễm nặng.",
+    "luu_y": "Giữ vùng da sạch, khô. Gặp bác sĩ nếu nhiễm trùng lan rộng hoặc sốt cao."
+  },
+  "Sỏi thận": {
+    "thuoc": "Tamsulosin 0.4mg, Thuốc giảm đau Diclofenac 50mg",
+    "huong_dan": "Tamsulosin: 1 viên mỗi tối để hỗ trợ bài tiết sỏi. Diclofenac: 1 viên mỗi 8 giờ khi đau, tối đa 3 viên/ngày.",
+    "luu_y": "Uống 2-3 lít nước/ngày, ăn nhạt. Gặp bác sĩ nếu đau dữ dội hoặc tiểu máu."
+  },
+  "Cường giáp": {
+    "thuoc": "Methimazole 5mg, Propranolol 40mg",
+    "huong_dan": "Methimazole: 1-2 viên mỗi ngày theo chỉ định bác sĩ. Propranolol: 1 viên 2 lần/ngày để giảm triệu chứng tim đập nhanh.",
+    "luu_y": "Theo dõi chức năng tuyến giáp định kỳ. Gặp bác sĩ nếu mệt mỏi hoặc run tay tăng."
+  }
+}

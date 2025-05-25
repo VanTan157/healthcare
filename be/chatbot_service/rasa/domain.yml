@@ -1,0 +1,53 @@
+version: "3.1"
+intents:
+  - chan_doan_benh
+  - goi_y_thuoc
+  - dat_lich_hen
+  - hoi_lai_trieu_chung
+  - xac_nhan_trieu_chung
+  - chao_hoi
+  - tam_biet
+  - out_of_scope
+entities:
+  - benh
+slots:
+  diagnosis:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: benh
+      - type: custom
+  symptoms:
+    type: list
+    mappings:
+      - type: custom
+  patient_id:
+    type: text
+    mappings:
+      - type: from_text
+actions:
+  - action_chan_doan_benh
+  - action_goi_y_thuoc
+  - action_dat_lich_hen
+  - action_hoi_lai_trieu_chung
+  - action_xac_nhan_trieu_chung
+responses:
+  utter_ask_symptoms:
+    - text: "Bạn đang gặp các triệu chứng nào? Vui lòng mô tả chi tiết, ví dụ: 'Tôi bị sốt, ho, đau họng'."
+  utter_confirm_symptoms:
+    - text: "Tôi đã ghi nhận triệu chứng: {symptoms}. Bạn có muốn tiếp tục chẩn đoán bệnh không?"
+  utter_diagnosis:
+    - text: "Dựa trên các triệu chứng ({symptoms}), bạn có thể mắc {diagnosis}. Vui lòng gặp bác sĩ để được chẩn đoán và điều trị chính xác."
+  utter_medication:
+    - text: "Gợi ý điều trị cho bệnh {diagnosis}:\n- Thuốc: {thuoc}\n- Hướng dẫn: {huong_dan}\n- Lưu ý: {luu_y}"
+  utter_no_medication:
+    - text: "Không tìm thấy gợi ý thuốc cho bệnh {diagnosis}. Vui lòng gặp bác sĩ để được kê đơn phù hợp."
+  utter_chao_hoi:
+    - text: "Xin chào! Tôi là chatbot y tế, sẵn sàng hỗ trợ bạn. Bạn đang gặp vấn đề sức khỏe gì?"
+  utter_tam_biet:
+    - text: "Tạm biệt! Chúc bạn khỏe mạnh. Nếu cần hỗ trợ, hãy quay lại nhé!"
+  utter_out_of_scope:
+    - text: "Xin lỗi, tôi không hiểu yêu cầu của bạn. Bạn có thể hỏi về triệu chứng, chẩn đoán bệnh, hoặc đặt lịch hẹn không?"
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

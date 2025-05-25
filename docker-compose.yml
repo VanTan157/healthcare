@@ -31,6 +31,7 @@ services:
       - postgres
     networks:
       - my-network
+
   pharmacy_service:
     build: ./be/pharmacy_service
     ports:
@@ -75,6 +76,8 @@ services:
     depends_on:
       - postgres
       - redis
+    networks:
+      - my-network
 
   payment_service:
     build: ./be/payment_service
@@ -84,15 +87,45 @@ services:
       - DATABASE_URL=postgres://user:password@postgres:5432/payment_db
     depends_on:
       - postgres
+    networks:
+      - my-network
 
-  chatbot_service:
+  chatbot_rasa:
+    build: ./be/chatbot_service
+    ports:
+      - "5005:5005"
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/chatbot_db
+      - PYTHONPATH=/app:/app/rasa:/app/rasa/actions
+    command: rasa run -m /app/rasa/models --enable-api --cors '*' --endpoints /app/rasa/endpoints.yml
+    depends_on:
+      - postgres
+    networks:
+      - my-network
+  chatbot_actions:
+    build: ./be/chatbot_service
+    ports:
+      - "5055:5055"
+    environment:
+      - PYTHONPATH=/app:/app/rasa:/app/rasa/actions
+    command: rasa run actions --actions actions --port 5055 --debug
+    depends_on:
+      - postgres
+    networks:
+      - my-network
+  chatbot_fastapi:
     build: ./be/chatbot_service
     ports:
       - "8009:8000"
     environment:
       - DATABASE_URL=postgres://user:password@postgres:5432/chatbot_db
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
     depends_on:
+      - chatbot_rasa
+      - chatbot_actions
       - postgres
+    networks:
+      - my-network
 
   postgres:
     image: postgres:13
@@ -106,6 +139,7 @@ services:
       - ./postgres-init/init-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh
     networks:
       - my-network
+
   redis:
     image: redis:latest
     ports:
@@ -123,6 +157,7 @@ services:
       - zookeeper
     networks:
       - my-network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -130,12 +165,14 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - my-network
+
   api_gateway:
     build: ./be/api_gateway
     ports:
       - "8080:8080"
     networks:
       - my-network
+
   frontend:
     build:
       context: ./fe
@@ -156,6 +193,7 @@ services:
     tty: true
     networks:
       - my-network
+
 volumes:
   postgres_data:
 

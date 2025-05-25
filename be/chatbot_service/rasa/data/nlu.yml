@@ -1,0 +1,118 @@
+version: "3.1"
+nlu:
+  - intent: chao_hoi
+    examples: |
+      - Xin chào
+      - Chào bạn
+      - Hey, chatbot đây hả?
+      - Chào bác sĩ
+      - Xin chào, tôi cần giúp đỡ
+      - Hello
+      - Chào, bạn khỏe không?
+      - Chào buổi sáng
+      - Chào, tôi muốn hỏi về sức khỏe
+      - Chào, có ai ở đó không?
+
+  - intent: tam_biet
+    examples: |
+      - Tạm biệt
+      - Bye
+      - Chào tạm biệt
+      - Cảm ơn, tôi đi đây
+      - Hẹn gặp lại
+      - Thoát
+      - Kết thúc
+      - Cảm ơn bạn, bye
+      - Tạm biệt nhé
+      - Chào, tôi xong rồi
+
+  - intent: chan_doan_benh
+    examples: |
+      - Tôi bị sốt và ho
+      - Tôi mệt mỏi và đau đầu
+      - Tôi đau bụng và buồn nôn
+      - Tôi đau ngực và khó thở
+      - Tôi đau họng và sổ mũi
+      - Tôi bị sốt cao mấy ngày nay
+      - Tôi cảm thấy mệt và đau khớp
+      - Tôi bị tiêu chảy và đau bụng
+      - Tôi có triệu chứng sốt, ho, và đau ngực
+      - Tôi bị chóng mặt và buồn nôn
+      - Tôi thấy khó thở và đau ngực
+      - Tôi bị phát ban và sốt
+      - Tôi bị đau đầu dữ dội và mệt
+      - Tôi bị đau họng, khó nuốt
+      - Tôi bị sổ mũi và ngứa họng
+      - Tôi cảm thấy đau đầu, chóng mặt, khó thở
+      - Tôi bị sốt, đau khớp, và mệt mỏi
+      - Tôi bị ho khan và đau ngực nhẹ
+      - Tôi bị buồn nôn và đau bụng dữ dội
+      - Tôi bị sốt nhẹ và mệt lả người
+
+  - intent: goi_y_thuoc
+    examples: |
+      - Gợi ý thuốc cho [Viêm phổi](benh)
+      - Thuốc nào trị [Cảm cúm](benh)?
+      - Tôi cần thuốc cho [Sốt xuất huyết](benh)
+      - Thuốc điều trị [Đau nửa đầu](benh) là gì?
+      - Có thuốc gì cho [Viêm dạ dày](benh) không?
+      - Tôi bị [Tăng huyết áp](benh), uống gì được?
+      - Thuốc trị [Nhiễm trùng đường tiết niệu](benh) là gì?
+      - Gợi ý thuốc cho [Viêm mũi dị ứng](benh)
+      - Tôi bị [Tiêu chảy cấp](benh), nên dùng thuốc gì?
+      - Thuốc nào giúp giảm triệu chứng [Viêm gan virus](benh)?
+      - Tôi cần thuốc cho [Đau thắt lưng](benh)
+      - Gợi ý thuốc bôi cho [Nhiễm trùng da](benh)
+      - Thuốc nào trị [Sỏi thận](benh)?
+      - Tôi bị [Cường giáp](benh), nên uống gì?
+      - Có thuốc gì cho [Viêm phế quản](benh) không?
+
+  - intent: dat_lich_hen
+    examples: |
+      - Tôi muốn đặt lịch hẹn
+      - Đặt lịch khám bác sĩ được không?
+      - Tôi cần đặt lịch khám vào thứ Hai
+      - Tôi muốn gặp bác sĩ sớm nhất
+      - Có thể đặt lịch khám tổng quát không?
+      - Tôi muốn đặt lịch với bác sĩ chuyên khoa
+      - Đặt lịch khám vào ngày mai được không?
+      - Tôi cần lịch hẹn gấp
+      - Có bác sĩ nào trống vào thứ Sáu không?
+      - Tôi muốn đặt lịch khám sức khỏe định kỳ
+      - Đặt lịch khám cho tôi vào tuần tới
+      - Tôi cần gặp bác sĩ nội khoa
+
+  - intent: out_of_scope
+    examples: |
+      - Tôi muốn đặt vé máy bay
+      - Thời tiết hôm nay thế nào?
+      - Bạn có biết nấu ăn không?
+      - Tôi cần mua thuốc ở đâu?
+      - Câu này không liên quan
+      - Tôi muốn hỏi về bảo hiểm
+      - Bạn có thể hát không?
+      - Tôi cần thông tin về bệnh viện
+      - Tôi muốn kiểm tra số dư tài khoản
+      - Bạn là ai?
+      - Tôi muốn biết giá cổ phiếu
+      - Hôm nay thứ mấy?
+
+  - intent: hoi_lai_trieu_chung
+    examples: |
+      - Triệu chứng của tôi là gì?
+      - Bạn vừa nói tôi bị gì?
+      - Bạn có thể nhắc lại triệu chứng không?
+      - Tôi vừa báo triệu chứng gì với bạn?
+      - Triệu chứng tôi nói là gì?
+      - Bạn có nhớ tôi nói bị gì không?
+
+  - intent: xac_nhan_trieu_chung
+    examples: |
+      - Đúng rồi, tôi bị sốt và ho
+      - Không, tôi không bị đau ngực
+      - Triệu chứng đúng như bạn nói
+      - Tôi bị thêm đau đầu nữa
+      - Không đúng, tôi chỉ bị sốt thôi
+      - Đúng, tôi có đau họng và sổ mũi
+      - Tôi xác nhận bị chóng mặt và buồn nôn
+      - Không, tôi không bị tiêu chảy

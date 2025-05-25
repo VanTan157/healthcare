@@ -18,7 +18,7 @@ class Appointment(models.Model):
         ('cancelled', 'Cancelled'),
     )
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='appointments')
-    doctor_id = models.IntegerField()  # ID bác sĩ, sẽ tích hợp với doctor_service sau
+    doctor_id = models.IntegerField()  
     appointment_date = models.DateTimeField()
     reason = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
